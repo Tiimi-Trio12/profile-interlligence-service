@@ -8,6 +8,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+	return res.status(200).json({
+		status: 'ok',
+		service: 'profile-app'
+	});
+});
+
+app.get('/health', (req, res) => {
+	return res.status(200).json({
+		status: 'ok'
+	});
+});
+
 // Register routes
 app.use('/api', profileRoutes);
 
