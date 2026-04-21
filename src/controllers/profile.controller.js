@@ -6,10 +6,17 @@ async function createProfile(req, res, next) {
     const { name } = req.body || {};
 
     // Input validation (required field check)
-    if (typeof name !== 'string' || !name.trim()) {
+    if (typeof name === 'undefined' || name === null || (typeof name === 'string' && !name.trim())) {
       return res.status(400).json({
         status: 'error',
         message: 'Name is required'
+      });
+    }
+
+    if (typeof name !== 'string') {
+      return res.status(422).json({
+        status: 'error',
+        message: 'Invalid query parameters'
       });
     }
 
@@ -53,20 +60,33 @@ async function getProfile(req, res, next) {
 // GET /profiles
 async function getProfiles(req, res, next) {
   try {
-    const filters = {
-      gender: req.query.gender?.toLowerCase(),
-      country_id: req.query.country_id?.toUpperCase(),
-      age_group: req.query.age_group?.toLowerCase()
-    };
-
-    const data = await service.getProfiles(filters);
+    const result = await service.listProfiles(req.query);
 
     return res.status(200).json({
       status: 'success',
-      count: data.length,
-      data
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      data: result.data
     });
 
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /profiles/search
+async function searchProfiles(req, res, next) {
+  try {
+    const result = await service.searchProfiles(req.query);
+
+    return res.status(200).json({
+      status: 'success',
+      page: result.page,
+      limit: result.limit,
+      total: result.total,
+      data: result.data
+    });
   } catch (err) {
     next(err);
   }
@@ -88,5 +108,6 @@ module.exports = {
   createProfile,
   getProfile,
   getProfiles,
+  searchProfiles,
   deleteProfile
 };

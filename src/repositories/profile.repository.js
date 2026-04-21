@@ -22,8 +22,17 @@ async function findById(id) {
 }
 
 // Get all with filters
-async function findAll(filters) {
+async function findAll(options) {
   return prisma.profile.findMany({
+    where: options?.where,
+    orderBy: options?.orderBy,
+    skip: options?.skip,
+    take: options?.take
+  });
+}
+
+async function count(filters) {
+  return prisma.profile.count({
     where: filters
   });
 }
@@ -40,5 +49,6 @@ module.exports = {
   createProfile,
   findById,
   findAll,
+  count,
   deleteById
 };

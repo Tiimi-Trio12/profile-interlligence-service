@@ -7,6 +7,13 @@ function errorHandler(err, req, res, next) {
     });
   }
 
+  if (Number.isInteger(err?.statusCode)) {
+    return res.status(err.statusCode).json({
+      status: 'error',
+      message: err.message || 'Internal server error'
+    });
+  }
+
   if (err.message === 'Name is required') {
     return res.status(400).json({
       status: 'error',
@@ -22,6 +29,13 @@ function errorHandler(err, req, res, next) {
     });
   }
 
+  if (err.code === 'P2025') {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Profile not found'
+    });
+  }
+
   // External API failure case
   if (typeof err?.message === 'string' && err.message.includes('returned an invalid response')) {
     return res.status(502).json({
@@ -33,6 +47,13 @@ function errorHandler(err, req, res, next) {
   // Not found case
   if (err.message === 'Profile not found') {
     return res.status(404).json({
+      status: 'error',
+      message: err.message
+    });
+  }
+
+  if (err.message === 'Invalid query parameters') {
+    return res.status(422).json({
       status: 'error',
       message: err.message
     });
