@@ -185,7 +185,8 @@ function buildSorting(query) {
 
 function buildPagination(query) {
   const page = parseInteger(query.page, 'page', { min: 1, defaultValue: 1 });
-  const limit = parseInteger(query.limit, 'limit', { min: 1, max: 50, defaultValue: 10 });
+  const requestedLimit = parseInteger(query.limit, 'limit', { min: 1, defaultValue: 10 });
+  const limit = Math.min(requestedLimit, 50);
   const skip = (page - 1) * limit;
 
   return { page, limit, skip, take: limit };
